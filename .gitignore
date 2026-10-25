@@ -1,0 +1,31 @@
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Temporary / Partial audio downloads
+audio_cache/*.part.m4a
+audio_cache/*.part
+*.part
+
+# Editor artifacts
+.vscode/
+.idea/
+*.swp
+*~

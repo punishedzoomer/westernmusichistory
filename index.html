@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A History of Western Music — Midterm Revision Edition</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Top Header & Progress Bar -->
+  <header class="top-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">𝄞</div>
+        <div>
+          <h1>A History of Western Music — Midterm Study Edition</h1>
+          <p>Prof. Chae Sooah (채수아) · Ancient Greece to the Classical Period · 25 Theory MCQs + 15 Listening MCQs</p>
+        </div>
+      </div>
+      <div class="stats-pills">
+        <div class="stat-pill"><span class="dot" style="background:var(--green)"></span><span id="stat-mastered">0 / 49 Mastered</span></div>
+        <div class="stat-pill"><span class="dot" style="background:var(--brass)"></span><span id="stat-flagged">0 Flagged</span></div>
+        <div class="stat-pill"><span class="dot" style="background:var(--accent)"></span><span id="stat-listen-score">Listening: 0/0 (0%)</span></div>
+        <div class="stat-pill"><span class="dot" style="background:var(--border-dark)"></span><span id="stat-theory-score">Theory: 0/0 (0%)</span></div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-target="view-blind-quiz">I. Blind Listening Quiz</button>
+      <button class="nav-tab" data-target="view-traps">II. Confusable Pairs (8 Groups)</button>
+      <button class="nav-tab" data-target="view-library">III. Repertoire Index (49 Works)</button>
+      <button class="nav-tab" data-target="view-notes">IV. Reconstructed Lecture Notes</button>
+      <button class="nav-tab" data-target="view-mock-exam">V. 40-Question Mock Examination</button>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- Persistent Blind-Capable YouTube Audio Deck -->
+    <section class="audio-deck">
+      <div class="yt-box">
+        <div id="yt-player"></div>
+        <div id="blind-curtain" class="blind-curtain">
+          <div class="curtain-icon">𝄽</div>
+          <div class="curtain-title">Blind Examination Screen</div>
+          <div class="curtain-sub">Title and video concealed until answer submission</div>
+        </div>
+      </div>
+
+      <div class="deck-controls">
+        <div class="deck-now-playing">
+          <div>
+            <div class="now-playing-label" id="deck-title">Ready — Select "Next Blind Track" below to begin</div>
+            <div class="now-playing-sub" id="deck-sub">49 required listening works configured with Prof. Chae's exact timestamps</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span id="deck-playlist-counter" class="playlist-counter-pill">Track 1 of 49 · All Works</span>
+            <a id="deck-yt-link" class="btn btn-sm" href="#" target="_blank" rel="noopener" style="display:none;">Open Source ↗</a>
+          </div>
+        </div>
+
+        <div class="deck-playlist-bar">
+          <label for="deck-category-select">Playlist Scope:</label>
+          <select id="deck-category-select">
+            <optgroup label="Complete Repertoire">
+              <option value="all" selected>All 49 Midterm Works (Complete)</option>
+            </optgroup>
+            <optgroup label="By Period">
+              <option value="era:Early">Medieval & Renaissance (#1–#3)</option>
+              <option value="era:Baroque">Baroque Period (#4–#21)</option>
+              <option value="era:Classical">Classical Period (#22–#49)</option>
+            </optgroup>
+            <optgroup label="By Major Composer">
+              <option value="comp:Bach">J. S. Bach (#12–#20 · 9 works)</option>
+              <option value="comp:Mozart">W. A. Mozart (#30–#43 · 14 works)</option>
+              <option value="comp:Haydn">F. J. Haydn (#24–#29 · 6 works)</option>
+              <option value="comp:Beethoven">L. van Beethoven (#44–#49 · 6 works)</option>
+              <option value="comp:Vivaldi">A. Vivaldi (#5–#7 · 3 works)</option>
+              <option value="comp:Handel">G. F. Handel (#8–#10 · 3 works)</option>
+            </optgroup>
+            <optgroup label="By Musical Genre">
+              <option value="genre:Symphony">Symphonies (#24, #25, #31, #32, #44, #49)</option>
+              <option value="genre:Sonata">Piano Sonatas & Sonatinas (#22, #23, #40, #41, #42, #46, #47)</option>
+              <option value="genre:Concerto">Concertos (Solo & Grosso · 9 works)</option>
+              <option value="genre:Chamber">Chamber & Solo Strings (10 works)</option>
+              <option value="genre:Vocal">Sacred Choral & Vocal (11 works)</option>
+              <option value="genre:Opera">Operas & Singspiel (#4, #9, #10, #37, #38)</option>
+            </optgroup>
+            <optgroup label="Study Focus">
+              <option value="traps">§ Confusable Trap Works Only (26 works)</option>
+              <option value="timestamps">† Timestamp-Cued Works Only (6 works)</option>
+              <option value="unmastered">Unmastered Works Only</option>
+              <option value="flagged">! Flagged for Review Only</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn" id="btn-prev-track" title="Previous Track in Category (P or [)">⏮ Prev</button>
+          <button class="btn btn-primary" id="btn-play-pause">▸ / ❚❚ Play · Pause <span class="kbd">Space</span></button>
+          <button class="btn" id="btn-next-track" title="Next Track in Category (N or ])">⏭ Next</button>
+          <button class="btn btn-gold" id="btn-toggle-loop" title="Toggle Auto-Advance & Looping (L)">↻ Loop: ON</button>
+          <button class="btn" id="btn-replay-cue">↻ Replay Cue <span class="kbd">R</span></button>
+          <button class="btn" id="btn-jump-theme">⇥ Main Theme</button>
+          <button class="btn" id="btn-random-drop">⤮ Random Drop <span class="kbd">J</span></button>
+          <button class="btn" id="btn-plus-15">+15s →</button>
+          <button class="btn" id="btn-toggle-curtain">[ Toggle Blind Screen ]</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 1: BLIND DROP-THE-NEEDLE LISTENING TRAINER                     -->
+    <!-- =================================================================== -->
+    <section id="view-blind-quiz" class="view-section active">
+      <div class="control-bar">
+        <div class="filter-group">
+          <label for="quiz-pool-filter">Repertoire Scope:</label>
+          <select id="quiz-pool-filter">
+            <option value="all">All 49 Midterm Works</option>
+            <option value="unmastered">Unmastered Works Only</option>
+            <option value="flagged">! Flagged Works Only (Confused / Review)</option>
+            <option value="traps">§ Confusable Trap Works Only (26 works)</option>
+            <option value="timestamps">† Timestamp-Cued Works Only (#13, #21, #25, #35, #37, #47)</option>
+            <option value="era:Early">Medieval & Renaissance (#1–#3)</option>
+            <option value="era:Baroque">Baroque Period (#4–#21)</option>
+            <option value="era:Classical">Classical Period (#22–#49)</option>
+            <option value="comp:Bach">J. S. Bach (#12–#20)</option>
+            <option value="comp:Handel">A. Vivaldi & G. F. Handel (#5–#10)</option>
+            <option value="comp:Haydn">F. J. Haydn (#24–#29)</option>
+            <option value="comp:Mozart">W. A. Mozart (#30–#43)</option>
+            <option value="comp:Beethoven">L. van Beethoven (#44–#49)</option>
+          </select>
+
+          <label for="quiz-drop-mode" style="margin-left:8px;">Needle Position:</label>
+          <select id="quiz-drop-mode">
+            <option value="cue">Professor's Cue / Opening (0:00 or Specified Time)</option>
+            <option value="random">⤮ Random Mid-Movement Drop (Exam Simulation)</option>
+            <option value="theme">⇥ Direct Main Theme / Vocal Entry</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" id="btn-next-listen-q">▸ Next Blind Track <span class="kbd">N</span></button>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-header">
+          <span class="track-num">§ I · Blind Listening Examination</span>
+          <span style="font-size:12px;color:var(--text-muted);font-family:var(--font-mono);">Keys: <span class="kbd">1</span>–<span class="kbd">4</span> select · <span class="kbd">N</span> next · <span class="kbd">J</span> random drop</span>
+        </div>
+        <div class="quiz-prompt">Identify the work currently playing from the Midterm Listening List:</div>
+        <div id="listening-quiz-options" class="options-grid"></div>
+        <div id="listening-quiz-feedback" class="feedback-box"></div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 2: SOUND-ALIKE TRAPS (A/B COMPARATOR)                          -->
+    <!-- =================================================================== -->
+    <section id="view-traps" class="view-section">
+      <div class="control-bar">
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:19px;">§ II · The Eight Confusable Repertoire Groups</h2>
+          <p style="font-size:13px;color:var(--text-muted);">Compare similar-sounding works side-by-side using ▸ Opening Cue or ⤮ Mid-Track Drop to isolate their distinguishing musical features.</p>
+        </div>
+      </div>
+      <div id="traps-container"></div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 3: ALL 49 TRACKS & SONIC ID CARDS                              -->
+    <!-- =================================================================== -->
+    <section id="view-library" class="view-section">
+      <div class="control-bar">
+        <div class="filter-group">
+          <label for="lib-search">Filter:</label>
+          <input type="text" id="lib-search" placeholder="Composer, title, BWV/K./Op., instrument..." style="min-width:250px;" />
+
+          <label for="lib-era-filter">Period:</label>
+          <select id="lib-era-filter">
+            <option value="all">All Periods (49)</option>
+            <option value="Medieval">Medieval (1)</option>
+            <option value="Renaissance">Renaissance (2)</option>
+            <option value="Baroque">Baroque (18)</option>
+            <option value="Classical">Classical (28)</option>
+          </select>
+
+          <label for="lib-status-filter">Status:</label>
+          <select id="lib-status-filter">
+            <option value="all">All Works</option>
+            <option value="unmastered">Unmastered Only</option>
+            <option value="flagged">! Flagged (Confused / Review)</option>
+            <option value="mastered">✓ Mastered Only</option>
+          </select>
+        </div>
+        <div id="lib-count-label" style="font-size:12.5px;color:var(--text-muted);font-family:var(--font-mono);">Showing 49 of 49 works</div>
+      </div>
+
+      <div id="library-grid" class="tracks-grid"></div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 4: RECONSTRUCTED PPT 1 & PPT 2 LECTURE NOTES + CHEAT SHEETS    -->
+    <!-- =================================================================== -->
+    <section id="view-notes" class="view-section">
+      <!-- High-Yield Exam Cheat Sheet Tables -->
+      <div class="slide-card">
+        <h2 style="font-family:var(--font-serif);font-size:19px;color:var(--accent);margin-bottom:12px;">§ IV.A · Reference Compendium: Catalogues, Sobriquets & Terminology</h2>
+        <div style="overflow-x:auto;">
+          <table class="cheat-table">
+            <thead>
+              <tr>
+                <th>Symbol / Term</th>
+                <th>Full Designation</th>
+                <th>Composer / Scope</th>
+                <th>Midterm Examination Relevance (PPT 1 Slides 3, 24 & PPT 2)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>K. (or KV)</strong></td>
+                <td><strong>Köchel-Verzeichnis</strong></td>
+                <td><strong>W. A. Mozart</strong> <em>(also Kirkpatrick for D. Scarlatti)</em></td>
+                <td><strong>Chronological</strong> catalogue of Mozart’s works (Slide 3 Sample Exam Question).</td>
+              </tr>
+              <tr>
+                <td><strong>BWV</strong></td>
+                <td><strong>Bach-Werke-Verzeichnis</strong></td>
+                <td><strong>J. S. Bach</strong></td>
+                <td>Thematic catalogue grouped by genre rather than chronology.</td>
+              </tr>
+              <tr>
+                <td><strong>Hob.</strong></td>
+                <td><strong>Hoboken-Verzeichnis</strong></td>
+                <td><strong>F. J. Haydn</strong></td>
+                <td>Thematic catalogue (e.g., Hob. I = 106 Symphonies; Hob. XVI = Piano Sonatas).</td>
+              </tr>
+              <tr>
+                <td><strong>D.</strong></td>
+                <td><strong>Deutsch-Verzeichnis</strong></td>
+                <td><strong>Franz Schubert</strong></td>
+                <td>Chronological catalogue (appears as a multiple-choice distractor on Slide 3).</td>
+              </tr>
+              <tr>
+                <td><strong>Op. / WoO</strong></td>
+                <td><strong>Opus</strong> ("work") / <strong>WoO</strong> ("work without opus")</td>
+                <td>General (Clementi, Kuhlau, Beethoven)</td>
+                <td>Specifies order of <strong>publication</strong>. Beethoven’s <em>Für Elise</em> is <strong>Bagatelle No. 25, WoO 59</strong> (Rondo form).</td>
+              </tr>
+              <tr>
+                <td><strong>"The Old Testament"</strong></td>
+                <td><strong>48 Well-Tempered Clavier</strong> (2 books: 12 major & 12 minor keys)</td>
+                <td><strong>J. S. Bach</strong> (BWV 846–893)</td>
+                <td>PPT 1, Slide 37: Preludes & Fugues in all 24 keys. Prelude No. 1 (#16) = accompaniment to Gounod’s <em>Ave Maria</em>.</td>
+              </tr>
+              <tr>
+                <td><strong>"The New Testament"</strong></td>
+                <td><strong>32 Piano Sonatas</strong></td>
+                <td><strong>L. van Beethoven</strong></td>
+                <td>PPT 2, Slide 25: Includes No. 8 <em>Pathétique</em> (#46), No. 14 <em>Moonlight</em>, No. 23 <em>Appassionata</em> (#47).</td>
+              </tr>
+              <tr>
+                <td><strong>1st Viennese School</strong></td>
+                <td><strong>Haydn, Mozart, Beethoven</strong></td>
+                <td>Classical Period (Vienna)</td>
+                <td>PPT 2, Slide 21: The three defining masters of the Classical era in Vienna.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="control-bar" style="display:block;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div class="filter-group">
+            <label for="notes-deck-filter">Deck:</label>
+            <select id="notes-deck-filter" style="max-width:260px;">
+              <option value="all">Both Decks (All 67 Slides)</option>
+              <option value="ppt1">PPT 1: Greece – Baroque (Slides 1–39)</option>
+              <option value="ppt2">PPT 2: Classical Period (Slides 1–28)</option>
+            </select>
+
+            <label for="notes-era-filter">Era:</label>
+            <select id="notes-era-filter" style="max-width:210px;">
+              <option value="all">All Eras</option>
+              <option value="Greece">Ancient Greece & Overview</option>
+              <option value="Medieval">Medieval (c. 1000–1400)</option>
+              <option value="Renaissance">Renaissance (c. 1400–1600)</option>
+              <option value="Baroque">Baroque & Score Theory (1600–1750)</option>
+              <option value="Classical">Pre-Classical & Classical (1750–1820)</option>
+              <option value="Romantic">Beethoven (Classical–Romantic)</option>
+            </select>
+
+            <label for="notes-search">Search:</label>
+            <input type="text" id="notes-search" placeholder="Pythagoras, Luther, Castrato, Singspiel..." style="width:210px;" />
+          </div>
+          <div id="notes-count-label" style="font-size:12.5px;color:var(--text-muted);font-family:var(--font-mono);">Showing all 28 slide lectures</div>
+        </div>
+        <div id="slides-jump-bar" style="display:flex;flex-wrap:wrap;gap:5px;width:100%;max-height:108px;overflow-y:auto;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
+      </div>
+
+      <div id="slides-notes-container"></div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 5: 40-QUESTION MOCK MIDTERM & THEORY DRILL                     -->
+    <!-- =================================================================== -->
+    <section id="view-mock-exam" class="view-section">
+      <div class="control-bar">
+        <div>
+          <h2 style="font-family:var(--font-serif);font-size:19px;">§ V · Written & Listening Examination Simulator (25 Theory + 15 Listening)</h2>
+          <p style="font-size:13px;color:var(--text-muted);">Select an examination mode below. Keys <span class="kbd">1</span>–<span class="kbd">4</span> submit an option; <span class="kbd">Enter</span> or <span class="kbd">N</span> advances.</p>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="window.startExamMode('mock40')">I. Full 40-Q Mock Midterm (25 Theory + 15 Listening)</button>
+          <button class="btn" onclick="window.startExamMode('theory25')">II. 25-Q Theory Examination</button>
+          <button class="btn" onclick="window.startExamMode('theoryAll')">III. Complete 52-Q Theory Bank</button>
+          <button class="btn btn-red" onclick="window.startExamMode('theoryMissed')">! Retry Missed Questions</button>
+        </div>
+      </div>
+
+      <div id="exam-stage"></div>
+    </section>
+
+  </main>
+
+  <script src="tracks_data.js"></script>
+  <script src="slides_and_quiz_data.js"></script>
+  <script src="slides_lecture_full.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
