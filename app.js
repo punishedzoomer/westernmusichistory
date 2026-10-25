@@ -9,8 +9,10 @@
   const LOCAL_AUDIO_IDS = new Set([
     "4pwfNap4DFM",  // #3 Italian Madrigal
     "_V7oujd9djk",  // #12 Bach Brandenburg Concerto No. 5
+    "V7oujd9djk",   // #12 Bach Brandenburg Concerto No. 5 (safe alias)
     "vNN_Kbuf7_U",  // #26 Haydn String Quartet 'The Lark'
-    "wqkXqpQMk2k"   // #31 Mozart Symphony No. 40
+    "wqkXqpQMk2k",  // #31 Mozart Symphony No. 40 (original link)
+    "QWHVvBtsZFY"   // #31 Mozart Symphony No. 40
   ]);
 
   function escHtml(str) {
@@ -230,13 +232,34 @@
       handleTrackPlaybackEnded();
     }
   });
+
+  function resolveAudioCacheSrc(ytId) {
+    const isStatic = window.location.protocol === "file:" || window.location.hostname.endsWith("github.io");
+    if (!isStatic) {
+      return `/api/audio?id=${encodeURIComponent(ytId)}`;
+    }
+    // On static hosting (GitHub Pages), strip leading underscore for Jekyll compatibility
+    const cleanId = (ytId || "").replace(/^_+/, "");
+    return `audio_cache/${encodeURIComponent(cleanId || ytId)}.m4a`;
+  }
+
   localAudio.addEventListener("error", function () {
     if (usingLocalAudio && currentTrack) {
-      const fallbackSrc = `audio_cache/${encodeURIComponent(currentTrack.ytId)}.m4a`;
-      if (localAudio.src && !localAudio.src.endsWith(fallbackSrc)) {
-        localAudio.src = fallbackSrc;
+      const cleanId = (currentTrack.ytId || "").replace(/^_+/, "");
+      const altSrc = `audio_cache/${encodeURIComponent(cleanId)}.m4a`;
+      if (localAudio.src && !localAudio.src.endsWith(altSrc)) {
+        localAudio.src = altSrc;
         localAudio.load();
         localAudio.play().catch(function () {});
+        return;
+      }
+      if (currentTrack.origYtId) {
+        const origSrc = `audio_cache/${encodeURIComponent(currentTrack.origYtId)}.m4a`;
+        if (localAudio.src && !localAudio.src.endsWith(origSrc)) {
+          localAudio.src = origSrc;
+          localAudio.load();
+          localAudio.play().catch(function () {});
+        }
       }
     }
   });
@@ -247,28 +270,31 @@
     if (ytReady && ytPlayer && typeof ytPlayer.pauseVideo === "function") {
       try { ytPlayer.pauseVideo(); } catch (e) {}
     }
-    const isStaticHosting = window.location.protocol === "file:" || window.location.hostname.endsWith("github.io");
-    const targetSrc = isStaticHosting
-      ? `audio_cache/${encodeURIComponent(ytId)}.m4a`
-      : `/api/audio?id=${encodeURIComponent(ytId)}`;
+
+    const targetSrc = resolveAudioCacheSrc(ytId);
 
     const subEl = document.getElementById("deck-sub");
     if (subEl && !isBlindMode && currentTrack) {
-      subEl.textContent = `${currentTrack.period} · ${currentTrack.genre} · Direct Audio Stream (${formatTime(startSec)})`;
+      subEl.textContent = `${currentTrack.era} · ${currentTrack.genre} · Direct Audio Stream (${formatTime(startSec)})`;
     }
+
     if (!localAudio.src || !localAudio.src.endsWith(targetSrc)) {
       localAudio.src = targetSrc;
       localAudio.load();
-      const onLoaded = function () {
-        localAudio.removeEventListener("loadedmetadata", onLoaded);
-        try { localAudio.currentTime = startSec || 0; } catch (e) {}
-        localAudio.play().catch(function () {});
-      };
-      localAudio.addEventListener("loadedmetadata", onLoaded);
+      try { localAudio.currentTime = startSec || 0; } catch (e) {}
+      const p = localAudio.play();
+      if (p !== undefined) {
+        p.catch(function () {});
+      }
     } else {
       try { localAudio.currentTime = startSec || 0; } catch (e) {}
-      localAudio.play().catch(function () {});
+      const p = localAudio.play();
+      if (p !== undefined) {
+        p.catch(function () {});
+      }
     }
+
+    updateBlindCurtain();
     syncPlayPauseButtons();
   }
 
@@ -360,6 +386,7 @@
     // Otherwise stop localAudio and use YouTube IFrame Player
     usingLocalAudio = false;
     try { localAudio.pause(); } catch (e) {}
+    updateBlindCurtain();
 
     if (!ytReady || !ytPlayer || typeof ytPlayer.loadVideoById !== "function") {
       pendingPlayRequest = { track, mode: currentDropMode, blind: isBlindMode };
@@ -522,6 +549,23 @@
     if (deckTimerEl) {
       deckTimerEl.textContent = `${stateLabel} · ${timeStr}`;
     }
+
+    // Update local audio card if active
+    const localCard = document.getElementById("local-audio-card");
+    if (localCard && usingLocalAudio && currentTrack) {
+      const localTitleEl = document.getElementById("local-audio-title");
+      if (localTitleEl) {
+        localTitleEl.textContent = `No. ${currentTrack.id}. ${currentTrack.composer} — ${currentTrack.title}`;
+      }
+      const localTimeEl = document.getElementById("local-audio-time");
+      if (localTimeEl) {
+        localTimeEl.textContent = `${stateLabel} · ${timeStr}`;
+      }
+      const discIcon = localCard.querySelector(".disc-icon");
+      if (discIcon) {
+        discIcon.style.animationPlayState = isPlaying ? "running" : "paused";
+      }
+    }
   }
 
   setInterval(updateLiveTimers, 500);
@@ -536,13 +580,18 @@
   function updateBlindCurtain() {
     const curtain = document.getElementById("blind-curtain");
     const ytBox = document.querySelector(".yt-box");
+    const localCard = document.getElementById("local-audio-card");
     if (!curtain || !ytBox) return;
     if (isBlindMode) {
       curtain.classList.remove("hidden");
       ytBox.classList.add("blind-active");
+      if (localCard) localCard.classList.add("hidden");
     } else {
       curtain.classList.add("hidden");
       ytBox.classList.remove("blind-active");
+      if (localCard) {
+        localCard.classList.toggle("hidden", !usingLocalAudio);
+      }
     }
   }
 
